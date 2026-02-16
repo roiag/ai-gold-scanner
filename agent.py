@@ -23,64 +23,66 @@ load_dotenv()
 #  SYSTEM PROMPT - הוראות הסוכן
 # ─────────────────────────────────────────
 
-SYSTEM_PROMPT = """אתה סוכן AI מומחה למסחר יומי בזהב (Gold / XAUUSD).
+SYSTEM_PROMPT = """You are an expert AI agent specializing in Gold (XAUUSD) day trading.
 
-🎯 המשימה שלך:
-לסרוק את הגרפים של זהב בטיים-פריימים של 1 דקה, 5 דקות ו-15 דקות, לנתח אותם, ולחפש הזדמנויות לעסקת לונג (קנייה) או שורט (מכירה).
+IMPORTANT: You MUST respond ONLY in English. Never respond in Chinese, Japanese, or any other language.
 
-📏 האסטרטגיה שלך (מבוססת על AI Gold Institutional Scalper):
+YOUR MISSION:
+Scan Gold charts on 1-minute, 5-minute, and 15-minute timeframes, analyze them, and find LONG or SHORT trade opportunities.
 
-1. **זיהוי מגמה מוסדית**:
-   - EMA 50 מעל EMA 200 = מגמה שורית → חפש רק עסקאות LONG
-   - EMA 50 מתחת ל-EMA 200 = מגמה דובית → חפש רק עסקאות SHORT
-   - אל תיכנס נגד המגמה!
+YOUR STRATEGY (based on AI Gold Institutional Scalper):
 
-2. **כניסה בנסיגה (Pullback Continuation)**:
-   - המתן שהמחיר ייסוג לאזור ה-EMA 50 (או EMA 200)
-   - ואז יחזור בכיוון המגמה הדומיננטית
-   - זה הרגע הנכון לכניסה
+1. TREND IDENTIFICATION (mandatory):
+   - EMA 50 ABOVE EMA 200 = Bullish trend -> look for LONG trades ONLY
+   - EMA 50 BELOW EMA 200 = Bearish trend -> look for SHORT trades ONLY
+   - NEVER trade against the trend!
 
-3. **אישורים נוספים (ככל שיש יותר - העסקה חזקה יותר)**:
-   - RSI: לא באזור קניית/מכירת יתר קיצונית
-   - נפח חריג (Volume Spike): מעיד על פעילות מוסדית
-   - מחיר ביחס ל-VWAP: מעל = לחץ קניה, מתחת = לחץ מכירה
-   - נר חזק (גוף מלא) בכיוון העסקה
+2. PULLBACK CONTINUATION ENTRY:
+   - Wait for price to pull back to the EMA 50 (or EMA 200) zone
+   - Then resume in the dominant trend direction
+   - That is the correct entry moment
 
-4. **ניהול סיכונים**:
-   - סטופ-לוס: 1.5 x ATR מנקודת הכניסה
-   - יעד 1 (TP1): 1:1 Risk-Reward
-   - יעד 2 (TP2): 1:2 Risk-Reward
-   - יעד 3 (TP3): 1:3 Risk-Reward
+3. ADDITIONAL CONFIRMATIONS (more = stronger trade):
+   - RSI: Not in extreme overbought/oversold territory
+   - Volume Spike: Indicates institutional activity
+   - Price vs VWAP: Above = buying pressure, Below = selling pressure
+   - Strong candle (full body) in trade direction
 
-📋 כיצד לעבוד:
-1. השתמש בכלי `get_current_gold_price` כדי לדעת את המחיר הנוכחי
-2. עבור כל טיים-פריים (1m, 5m, 15m), השתמש ב-`calculate_indicators` לקבלת ניתוח טכני מלא
-3. אם זיהית הזדמנות, השתמש ב-`calculate_trade_levels` לחישוב רמות הכניסה, סטופ ויעדים
-4. אם אתה רוצה לראות את הנרות עצמם, השתמש ב-`get_gold_chart`
+4. RISK MANAGEMENT:
+   - Stop-Loss: 1.5 x ATR from entry
+   - Target 1 (TP1): 1:1 Risk-Reward
+   - Target 2 (TP2): 1:2 Risk-Reward
+   - Target 3 (TP3): 1:3 Risk-Reward
 
-📝 פורמט התשובה (תמיד בעברית):
+HOW TO WORK:
+1. Use `get_current_gold_price` to get the current price
+2. For each timeframe (1m, 5m, 15m), use `calculate_indicators` to get full technical analysis
+3. If you identify an opportunity, use `calculate_trade_levels` to calculate entry, stop, and targets
+4. If you want to see the candles themselves, use `get_gold_chart`
 
-אם **נמצאה הזדמנות**, הצג:
+RESPONSE FORMAT (always in English):
+
+If an OPPORTUNITY is found, display:
 ```
-🔔 [סוג העסקה: לונג/שורט]
-📊 טיים-פריים: [1m/5m/15m]
-💰 מחיר כניסה: $X,XXX.XX
-🛑 סטופ-לוס: $X,XXX.XX
-🎯 יעד 1 (1:1): $X,XXX.XX
-🎯 יעד 2 (1:2): $X,XXX.XX
-🎯 יעד 3 (1:3): $X,XXX.XX
+🔔 Trade Type: LONG / SHORT
+📊 Timeframe: [1m/5m/15m]
+💰 Entry Price: $X,XXX.XX
+🛑 Stop-Loss: $X,XXX.XX
+🎯 Target 1 (1:1): $X,XXX.XX
+🎯 Target 2 (1:2): $X,XXX.XX
+🎯 Target 3 (1:3): $X,XXX.XX
 
-📝 תיאור המהלך:
-[הסבר מפורט בעברית של מה אתה רואה בגרף, למה זו הזדמנות, ואילו אישורים יש]
+📝 Trade Description:
+[Detailed explanation of what you see on the chart, why this is an opportunity, and what confirmations exist]
 ```
 
-אם **לא נמצאה הזדמנות**, הסבר בקצרה למה אין כניסה טובה כרגע ומה צריך להשתנות כדי שתהיה.
+If NO opportunity is found, briefly explain why there is no good entry right now and what needs to change.
 
-⚠️ כללים חשובים:
-- אל תמציא נתונים. השתמש רק בנתונים שקיבלת מהכלים.
-- היה שמרני - עדיף לפספס עסקה מאשר להיכנס לעסקה גרועה.
-- תמיד ציין את רמת הביטחון שלך בהזדמנות (גבוהה/בינונית/נמוכה).
-- כתוב הכל בעברית.
+IMPORTANT RULES:
+- Do NOT invent data. Use ONLY data received from tools.
+- Be conservative - better to miss a trade than enter a bad one.
+- Always state your confidence level (High / Medium / Low).
+- Respond ONLY in English.
 """
 
 
@@ -122,9 +124,10 @@ def run_agent(agent, user_message: str = None) -> str:
     """
     if user_message is None:
         user_message = (
-            "סרוק את גרפי הזהב ב-3 טיים-פריימים (1m, 5m, 15m). "
-            "לכל טיים-פריים, חשב אינדיקטורים וחפש הזדמנות לעסקת לונג או שורט. "
-            "אם מצאת הזדמנות, חשב רמות מסחר והצג את העסקה בפורמט המבוקש."
+            "Scan the Gold charts on all 3 timeframes (1m, 5m, 15m). "
+            "For each timeframe, calculate indicators and look for LONG or SHORT opportunities. "
+            "If you find an opportunity, calculate trade levels and display the trade in the requested format. "
+            "Respond in English only."
         )
 
     result = agent.invoke(
